@@ -1,6 +1,6 @@
 # kitex_rpc
 
-快速生成web,依赖字节跳动的 hz.  支持redis,mysql,pulsar,naocs,elastic 等常用中间件
+快速生成rpc,依赖字节跳动的 hz.  支持redis,mysql,pulsar,naocs,elastic 等常用中间件
 
 案例地址 [案例 洁骏汽车服务有限公司](http://www.ch123.com.cn/ "洁骏汽车服务有限公司")
 
