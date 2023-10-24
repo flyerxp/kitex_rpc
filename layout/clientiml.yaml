@@ -1,0 +1,70 @@
+path: client/client_impl.go
+update_behavior:
+  type: cover
+body: |-
+  package client
+  import (
+      {{- range $path, $aliases := .Imports}}
+      	{{- if not $aliases }}
+      		"{{$path}}"
+           {{- else if or (eq $path "github.com/cloudwego/kitex/client") (eq $path "github.com/cloudwego/kitex/pkg/serviceinfo")}}
+      	{{- else}}
+      		{{- range $alias, $is := $aliases}}
+      			{{$alias}} "{{$path}}"
+      		{{- end}}
+      	{{- end}}
+      {{- end}}
+      "github.com/cloudwego/kitex/client/callopt"
+      "github.com/flyerxp/webrpclib/rpc"
+      "time"
+      "github.com/flyerxp/lib/logger"
+  )
+  func recordError(ctx context.Context, err error) {
+     rpc.RecordError(ctx, err)
+  }
+  {{range .AllMethods}}
+      {{- if or .ClientStreaming .ServerStreaming}}
+          func {{.Name}} ({{if not .ClientStreaming}}{{range .Args}}{{LowerFirst .Name}} {{.Type}}, {{end}}{{end}}stream {{.PkgRefName}}.{{.ServiceName}}_{{.RawName}}Server) (err error){
+             t := time.Now()
+            defer func() {
+                i := int(time.Since(t).Milliseconds())
+                logger.AddRpcTime(ctx,i)
+                logger.SetExecTime(ctx,i)
+             }()
+             err = defaultClient.{{.Name}}(ctx, {{- range .Args}}{{LowerFirst .Name}},{{end}} callOptions...)            
+             return err
+          }
+      {{ else }}
+      {{- if .Oneway}}
+         func {{.Name}}(ctx context.Context, {{- range .Args}} {{LowerFirst .Name}} {{.Type}}, {{end}} callOptions ...callopt.Option) (err error){
+             t := time.Now()
+             defer func() {
+                i := int(time.Since(t).Milliseconds())
+                logger.AddRpcTime(ctx,i)
+                logger.SetExecTime(ctx,i)
+             }()
+             err = defaultClient.{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)            
+             return err
+        }
+      {{else -}}
+          func {{.Name}}(ctx context.Context, {{range .Args}} {{LowerFirst .Name}} {{.Type}} ,{{end}} callOptions ...callopt.Option) (resp {{.Resp.Type}}, err error){
+            t := time.Now()
+            defer func() {
+              i := int(time.Since(t).Milliseconds())
+              logger.AddRpcTime(ctx,i)
+              logger.SetExecTime(ctx,i)
+            }()
+            resp, err = defaultClient.{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
+            if err != nil {
+               recordError(context.Background(), err)              
+            }
+            if resp == nil {
+              resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
+              resp.Status = 203
+              resp.Message = err.Error()
+            }
+            return resp, err
+           }
+  {{end}}
+  {{end}}
+  {{end}}

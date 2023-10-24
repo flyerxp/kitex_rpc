@@ -1,0 +1,16 @@
+path: biz/dal/init.go
+update_behavior:
+  type: skip
+body: |-
+  package dal
+  import (
+    "context"
+  	"{{ .Module }}/biz/dal/mysql"
+  	"{{ .Module }}/biz/dal/redis"
+  )
+
+  func InitDal(ctx context.Context) {
+    mysql.InitMysql(ctx)
+    redis.InitRedis(ctx)
+  }
+  

@@ -1,0 +1,16 @@
+path: biz/dal/redis/init.go
+update_behavior:
+  type: skip
+body: |-
+  package redis
+  
+  import (
+    "context"
+    "github.com/flyerxp/lib/middleware/redisL"
+  )
+  
+  var RedisExample *redisL.RedisC
+  
+  func InitRedis(ctx context.Context) {
+    RedisExample, _ = redisL.GetEngine( ctx,"pubRedis")
+  }

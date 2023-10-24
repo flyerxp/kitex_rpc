@@ -1,0 +1,41 @@
+path: main.go
+update_behavior:
+  type: skip
+body: |-
+  package main
+
+  import (
+    "{{ .Module }}/conf"
+    "github.com/flyerxp/webrpclib/rpc"
+    "github.com/cloudwego/kitex/pkg/klog"  
+    "github.com/cloudwego/kitex/server" 
+    "{{.Module }}/kitex_gen/{{ ToLower .PkgRefName }}/{{ToLower .ServiceName}}"
+    "context"
+    "github.com/flyerxp/lib/app"
+    "github.com/flyerxp/lib/logger"
+    "go.uber.org/zap"
+    "time"
+  )
+  
+  func main() {
+    time.LoadLocation("Asia/Shanghai") 
+    ctx := logger.GetContext(context.Background(), "rpcServerStart")
+    defer func() {      
+      if err := recover(); err != nil {
+        logger.AddError(ctx,zap.Any("panic", err))
+      }
+    }()  
+    opts := kitexInit()
+    svr := {{ToLower .ServiceName}}.NewServer(new({{.ServiceName}}Impl), opts...)
+    err := svr.Run()
+    if err != nil {
+      klog.Error(err.Error())
+      logger.WarnWithoutCtx(zap.Error(err))
+    }
+    app.Shutdown(ctx)
+  }
+
+  func kitexInit() (opts []server.Option) {
+    options := rpc.GetServerOptions("{{ .ServiceName }}",conf.GetConfYaml())  
+    return options
+  }

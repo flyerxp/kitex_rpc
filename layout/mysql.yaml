@@ -1,0 +1,24 @@
+path: biz/dal/mysql/init.go
+update_behavior:
+  type: skip
+body: |-
+  package mysql
+  
+  import (
+    "context"
+    "github.com/flyerxp/lib/middleware/mysqlL"
+  )
+  
+  // 定义所有的数据库连接,每个连接一个名字
+  type DbClientStt struct {
+     D{{ .PkgName }}  *mysqlL.MysqlClient
+  }
+  
+  var DbClient *DbClientStt
+  
+  func InitMysql(ctx context.Context) {
+    if DbClient == nil {
+      DbClient = new(DbClientStt)
+      DbClient.D{{ .PkgName }}, _ = mysqlL.GetEngine(ctx,"pubMysql")     
+    }  
+  }

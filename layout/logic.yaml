@@ -1,0 +1,15 @@
+path: biz/logic/test.go
+update_behavior:
+  type: skip
+body: |-
+  package logic
+  
+  import (
+    "context"
+  )
+  
+  type test struct{}
+  
+  func (t *test) t(ctx context.Context) string {
+      return "aaaaaaaaaaaaa"
+  }

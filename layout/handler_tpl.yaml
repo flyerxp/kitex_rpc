@@ -1,0 +1,155 @@
+path: handler.go
+update_behavior:
+  type: append
+  key: "{{ (index .Methods 0).Name }}"
+  append_tpl: |-
+    {{range .AllMethods}}
+     {{- if or .ClientStreaming .ServerStreaming}}
+     func (s *{{$.ServiceName}}Impl) {{.Name}}({{if not .ClientStreaming}}{{range .Args}}{{LowerFirst .Name}} {{.Type}}, {{end}}{{end}}stream {{.PkgRefName}}.{{.ServiceName}}_{{.RawName}}Server) (err error) {	
+       s.rpcStart(context.Background(),req)
+       defer func() {
+         s.rpcEnd(ctx)
+       }()
+       err = service.New{{.Name}}Service(ctx).Run({{if not .ClientStreaming}}{{range .Args}}{{LowerFirst .Name}}, {{end}}{{end}}stream)
+       return
+     }
+     {{- else}}
+     {{- if .Void}}
+     // {{.Name}} implements the {{.ServiceName}}Impl interface.
+     {{- if .Oneway}}
+     // Oneway methods are not guaranteed to receive 100% of the requests sent by the client.
+     // And the client may not perceive the loss of requests due to network packet loss.
+     // If possible, do not use oneway methods.
+     {{- end}}
+     func (s *{{$.ServiceName}}Impl) {{.Name}}(ctx context.Context {{- range .Args}}, {{LowerFirst .Name}} {{.Type}}{{end}}) (err error) {
+       s.rpcStart(ctx)
+       logger.SetArgs(ctx,req.String())
+       defer func() {
+         s.rpcEnd(ctx)
+       }()
+       err = service.New{{.Name}}Service(ctx).Run({{range .Args}} {{LowerFirst .Name}}, {{end}})
+
+       return err
+     }
+     {{else -}}
+     // {{.Name}} implements the {{.ServiceName}}Impl interface.
+     func (s *{{$.ServiceName}}Impl) {{.Name}}(ctx context.Context {{range .Args}}, {{LowerFirst .Name}} {{.Type}}{{end}} ) (resp {{.Resp.Type}}, err error) {
+       s.rpcStart(ctx)
+       logger.SetArgs(ctx,req.String())
+       defer func() {
+         s.rpcEnd(ctx)
+       }()
+       resp, err = service.New{{.Name}}Service(ctx).Run({{range .Args}} {{LowerFirst .Name}}, {{end}})
+       if err != nil {
+        st, msg := getErrMessage(ctx,"{{ToLower  .PkgRefName }}:{{.Name}}",err)
+       resp.Status = st
+       if resp.Message == "" {
+          resp.Message = msg
+        }
+       }
+       return resp, nil
+     }
+     {{end}}
+     {{end}}
+     {{end}}
+  import_tpl:
+    - "{{ ( index (index (index .Methods 0).Args 0).Deps 0).ImportPath }}"
+    - "{{ ( index (index .Methods 0).Resp.Deps 0).ImportPath }}"
+
+body: |-
+  package main
+  import (
+    "time"
+    "github.com/flyerxp/lib/logger"
+    "github.com/cloudwego/kitex/pkg/kerrors"
+    "go.uber.org/zap"
+     "{{.Module }}/biz/service"
+  	{{- range $path, $aliases := .Imports}}
+  		{{- if not $aliases }}
+  			"{{$path}}"
+        {{- else if or (eq $path "github.com/cloudwego/kitex/client") (eq $path "github.com/cloudwego/kitex/pkg/serviceinfo")}}
+  		{{- else}}
+  			{{- range $alias, $is := $aliases}}
+  				{{$alias}} "{{$path}}"
+  			{{- end}}
+  		{{- end}}
+  	{{- end}}
+  )
+
+  // {{.ServiceName}}Impl implements the last service interface defined in the IDL.
+  type {{.ServiceName}}Impl struct{
+     rpcStartTime time.Time
+  }  
+  func (s *{{$.ServiceName}}Impl) rpcStart(ctx context.Context) {
+    s.rpcStartTime = time.Now()
+  }
+    
+  func (s *{{$.ServiceName}}Impl) rpcEnd(ctx context.Context) {
+    logger.SetExecTime(ctx,int(time.Since(s.rpcStartTime).Milliseconds()))
+    logger.WriteLine(ctx)
+  }
+  func getErrMessage(ctx context.Context, rpcName string, err error) (int32, string) {
+    bizErr, isBizErr := kerrors.FromBizStatusError(err)
+    if isBizErr {
+      return bizErr.BizStatusCode(), bizErr.BizMessage()
+    } else {
+      logger.AddError(ctx, zap.String("Rpc", rpcName), zap.Error(err))
+      return 204, err.Error()
+    }
+  }
+  {{range .AllMethods}}
+  {{- if or .ClientStreaming .ServerStreaming}}
+  func (s *{{$.ServiceName}}Impl) {{.Name}}({{if not .ClientStreaming}}{{range .Args}}{{LowerFirst .Name}} {{.Type}}, {{end}}{{end}}stream {{.PkgRefName}}.{{.ServiceName}}_{{.RawName}}Server) (err error) {	
+    s.rpcStart(ctx)
+    logger.SetArgs(ctx,req.String())
+    defer func() {
+      s.rpcEnd(ctx)
+    }()
+    err = service.New{{.Name}}Service(ctx).Run({{if not .ClientStreaming}}{{range .Args}}{{LowerFirst .Name}}, {{end}}{{end}}stream)
+    return
+  }
+  {{- else}}
+  {{- if .Void}}
+  // {{.Name}} implements the {{.ServiceName}}Impl interface.
+  {{- if .Oneway}}
+  // Oneway methods are not guaranteed to receive 100% of the requests sent by the client.
+  // And the client may not perceive the loss of requests due to network packet loss.
+  // If possible, do not use oneway methods.
+  {{- end}}
+  func (s *{{$.ServiceName}}Impl) {{.Name}}(ctx context.Context {{- range .Args}}, {{LowerFirst .Name}} {{.Type}}{{end}}) (err error) {
+    s.rpcStart(ctx)
+    logger.SetArgs(ctx,req.String())
+    defer func() {
+      s.rpcEnd(ctx)
+    }()
+    err = service.New{{.Name}}Service(ctx).Run({{range .Args}} {{LowerFirst .Name}}, {{end}})
+    if err != nil {
+      st, msg := getErrMessage(ctx,"{{ToLower  .PkgRefName }}:{{.Name}}",err)
+      resp.Status = st
+      if resp.Message == "" {
+        resp.Message = msg
+      }
+    }
+    return resp, nil
+  }
+  {{else -}}
+  // {{.Name}} implements the {{.ServiceName}}Impl interface.
+  func (s *{{$.ServiceName}}Impl) {{.Name}}(ctx context.Context {{range .Args}}, {{LowerFirst .Name}} {{.Type}}{{end}} ) (resp {{.Resp.Type}}, err error) {
+    s.rpcStart(ctx)
+    logger.SetArgs(ctx,req.String())
+    defer func() {
+      s.rpcEnd(ctx)
+    }()
+    resp, err = service.New{{.Name}}Service(ctx).Run({{range .Args}} {{LowerFirst .Name}}, {{end}})
+    if err != nil {
+      st, msg := getErrMessage(ctx,"{{ToLower  .PkgRefName }}:{{.Name}}",err)
+      resp.Status = st
+      if resp.Message == "" {
+        resp.Message = msg
+      }
+    }
+    return resp, nil
+  }
+  {{end}}
+  {{end}}
+  {{end}}

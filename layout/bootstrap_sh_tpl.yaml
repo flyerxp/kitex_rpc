@@ -1,0 +1,10 @@
+path: script/bootstrap.sh
+update_behavior:
+  type: skip
+body: |-
+   #!/bin/bash
+   CURDIR=$(cd $(dirname $0); pwd)                                                                                               |  CURDIR=$(cd $(dirname $0); pwd)
+   echo $CURDIR                                                                                                                  |  echo "$CURDIR/bin/newsinfo"                                                                                                  
+   BinaryName={{.ServiceName}}                                                                                                            |  exec "$CURDIR/bin/newsinfo"                                                                                                  
+   echo "$CURDIR/bin/${BinaryName}"                                                                                              |  -----------------------------------------------------------------------------------------------------------------------------
+   exec "$CURDIR/bin/${BinaryName}"

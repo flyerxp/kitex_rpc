@@ -1,0 +1,83 @@
+path: conf/test/app.yml
+update_behavior:
+  type: skip
+body: |-
+  env: test
+  app:
+    name: {{ .ServiceName }}
+    type: rpc
+    logger:
+      level: debug
+      encoding: json
+      outputPaths:
+        - stdout
+        - logs/rpc_test
+      errorOutputPaths:
+        - stderr
+      initialFields:
+        app: test
+      encoderConfig:
+        #messageKey: msg
+        levelKey: level
+        nameKey: name
+        TimeKey: time
+        #CallerKey: caller
+        #FunctionKey: func
+        StacktraceKey: stacktrace
+        LineEnding: "\n"
+    errlog:
+      level: warn
+      encoding: json
+      outputPaths:
+        - stdout
+        - logs/rpc_test
+      errorOutputPaths:
+        - stderr
+      initialFields:
+        app: test
+      encoderConfig:
+        #messageKey: msg
+        levelKey: level
+        nameKey: name
+        TimeKey: time
+        CallerKey: caller
+        FunctionKey: func
+        StacktraceKey: stacktrace
+        LineEnding: "\n"
+  mysql:
+    -
+      name: admin
+      address: pubmysql
+      port: 3306
+      user: test
+      pwd: 123456
+      ssl: disable
+      db: ch123
+      sql_log: yes
+      read_timeout: 100
+      conn_timeout: 100
+      write_timeout: 100
+      char_set: utf8mb4
+      max_idle_conns: 10
+      max_open_conns: 500
+  nacos:
+    -
+      name: nacosConf
+      url: http://nacosconf:8850/nacos
+      contextPath: /nacos
+      ns: 62c3bcf9-7948-4c26-a353-cebc0a7c9712
+      user: dev
+      pwd: 123456
+      redis:
+        name: base
+        address: [ "nacosconfredis:6379" ]
+        user:
+        pwd:
+        master:
+    -
+      name: rpcNacos
+      url: http://nacosconf:8850/nacos
+      contextPath: /nacos
+      ns: 62c3bcf9-7948-4c26-a353-cebc0a7c9712
+      user: dev
+      pwd: 123456

@@ -1,0 +1,47 @@
+path: client/client.go
+loop_method: false
+update_behavior:
+  type: skip
+body: |-
+  package client
+  
+  import (
+    {{ToLower .ServiceName}} "{{ .Module }}/kitex_gen/{{ToLower  .PkgRefName }}/{{ToLower .ServiceName }}"
+    "github.com/cloudwego/kitex/client"
+    "github.com/flyerxp/webrpclib/rpc"
+    "sync"
+    "{{ .Module }}/conf"
+  )
+  
+  const ServiceName = "{{ .ServiceName }}"
+  
+  var (
+    // todo edit custom config
+    defaultClientOpts []client.Option
+    defaultClient     {{ToLower .ServiceName}}.Client
+    once              sync.Once
+  )
+  
+  func init() {
+    go func() {
+      defaultClientOpts = rpc.GetClientOptions(conf.GetConfYaml())    
+      defaultClient = newClient(defaultClientOpts...)
+    }()
+  }
+  func getClient() {{ToLower .ServiceName}}.Client {
+    if defaultClient != nil {
+      return defaultClient
+    } else {
+      defaultClientOpts = rpc.GetClientOptions(conf.GetConfYaml())
+      defaultClient = newClient(defaultClientOpts...)
+      return defaultClient
+    }
+  }
+  
+  func newClient(opts ...client.Option) {{ToLower .ServiceName}}.Client {
+    c, err := {{ToLower .ServiceName}}.NewClient(ServiceName, opts...)
+    if err != nil {
+    panic("failed to init client: " + err.Error())
+    }
+    return c
+  }
