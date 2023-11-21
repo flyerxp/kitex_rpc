@@ -18,9 +18,22 @@ body: |-
       "github.com/flyerxp/webrpclib/rpc"
       "time"
       "github.com/flyerxp/lib/logger"
+      "github.com/cloudwego/kitex/pkg/kerrors"
+      "github.com/flyerxp/lib/config" 
+      "errors"
   )
   func recordError(ctx context.Context, err error) {
      rpc.RecordError(ctx, err)
+  }
+  func isSystemErr(err error) bool {
+    if config.GetConf().Env == "product" {
+      if bizE, ok := kerrors.FromBizStatusError(err); ok {
+        if _, ok = bizE.(kerrors.GRPCStatusIface); ok {
+          return true
+        }
+      }
+    }
+    return false
   }
   {{range .AllMethods}}
       {{- if or .ClientStreaming .ServerStreaming}}
@@ -56,7 +69,10 @@ body: |-
             }()
             resp, err = defaultClient.{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
             if err != nil {
-               recordError(context.Background(), err)              
+               recordError(ctx, err)
+               if isSystemErr(err){
+                  resp.Message = "系统错误"
+               }
             }
             if resp == nil {
               resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
