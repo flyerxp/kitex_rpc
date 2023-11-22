@@ -11,7 +11,7 @@ body: |-
   func GetConfYaml() string {
   //这里需要换成自己的获取配置
   nacosConf := config.GetRpcNacosConf(env.GetEnv())
-  address := "[::]:2082"
+  address := ":2082"
   yaml := `kitex:
     server:
       service_name: "{{ .ServiceName }}"
