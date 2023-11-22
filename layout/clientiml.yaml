@@ -76,7 +76,11 @@ body: |-
             if resp == nil {
               resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
               resp.Status = 203
-              resp.Message = err.Error()
+              if config.GetConf().Env == "product" {
+                resp.Message = "rpc异常错误"
+              } else {
+                resp.Message = err.Error()
+              }
             }
             return resp, err
            }
