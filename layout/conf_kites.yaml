@@ -9,6 +9,7 @@ body: |-
     "github.com/flyerxp/lib/utils/env"
   )
   func GetConfYaml() string {
+  //这里需要换成自己的获取配置
   nacosConf := config.GetRpcNacosConf(env.GetEnv())
   address := "[::]:2082"
   yaml := `kitex:
