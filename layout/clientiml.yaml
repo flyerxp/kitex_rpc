@@ -19,8 +19,7 @@ body: |-
       "time"
       "github.com/flyerxp/lib/logger"
       "github.com/cloudwego/kitex/pkg/kerrors"
-      "github.com/flyerxp/lib/config" 
-      "errors"
+      "github.com/flyerxp/lib/config"
   )
   func recordError(ctx context.Context, err error) {
      rpc.RecordError(ctx, err)
