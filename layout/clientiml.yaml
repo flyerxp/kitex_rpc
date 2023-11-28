@@ -43,7 +43,7 @@ body: |-
                 logger.AddRpcTime(ctx,i)
                 logger.SetExecTime(ctx,i)
              }()
-             err = defaultClient.{{.Name}}(ctx, {{- range .Args}}{{LowerFirst .Name}},{{end}} callOptions...)            
+             err = getClient().{{.Name}}(ctx, {{- range .Args}}{{LowerFirst .Name}},{{end}} callOptions...)            
              return err
           }
       {{ else }}
@@ -55,7 +55,7 @@ body: |-
                 logger.AddRpcTime(ctx,i)
                 logger.SetExecTime(ctx,i)
              }()
-             err = defaultClient.{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)            
+             err = getClient().{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)            
              return err
         }
       {{else -}}
@@ -66,7 +66,7 @@ body: |-
               logger.AddRpcTime(ctx,i)
               logger.SetExecTime(ctx,i)
             }()
-            resp, err = defaultClient.{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
+            resp, err = getClient().{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
             if err != nil {
                recordError(ctx, err)
                if isSystemErr(err){
