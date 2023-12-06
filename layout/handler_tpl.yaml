@@ -85,7 +85,7 @@ body: |-
   }
     
   func (s *{{$.ServiceName}}Impl) rpcEnd(ctx context.Context) {
-    logger.SetExecTime(ctx,int(time.Since(s.rpcStartTime).Milliseconds()))
+    logger.SetExecTime(ctx,int(time.Since(s.rpcStartTime).Microseconds()))
     logger.WriteLine(ctx)
   }
   func getErrMessage(ctx context.Context, rpcName string, err error) (int32, string) {
