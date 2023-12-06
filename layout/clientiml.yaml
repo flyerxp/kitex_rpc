@@ -41,7 +41,7 @@ body: |-
             defer func() {
                 i := int(time.Since(t).Microseconds())
                 logger.AddRpcTime(ctx,i)
-                logger.SetExecTime(ctx,i)
+                
              }()
              err = getClient().{{.Name}}(ctx, {{- range .Args}}{{LowerFirst .Name}},{{end}} callOptions...)            
              return err
@@ -53,7 +53,7 @@ body: |-
              defer func() {
                 i := int(time.Since(t).Microseconds())
                 logger.AddRpcTime(ctx,i)
-                logger.SetExecTime(ctx,i)
+                
              }()
              err = getClient().{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)            
              return err
@@ -64,7 +64,7 @@ body: |-
             defer func() {
               i := int(time.Since(t).Microseconds())
               logger.AddRpcTime(ctx,i)
-              logger.SetExecTime(ctx,i)
+              
             }()
             resp, err = getClient().{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
             if err != nil {
