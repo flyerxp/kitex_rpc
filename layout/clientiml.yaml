@@ -68,19 +68,12 @@ body: |-
             }()
             resp, err = getClient().{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
             if err != nil {
-               recordError(ctx, err)
-               if isSystemErr(err){
-                  resp.Message = "系统错误"
-               }
+               recordError(ctx, err)              
             }
             if resp == nil {
               resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
               resp.Status = 203
-              if config.GetConf().Env == "product" {
-                resp.Message = "rpc异常错误"
-              } else {
-                resp.Message = err.Error()
-              }
+              resp.Message = err.Error()
             }
             return resp, err
            }
