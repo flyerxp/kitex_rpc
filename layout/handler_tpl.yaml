@@ -130,7 +130,7 @@ body: |-
         resp.Message = msg
       }
     }
-    return resp, nil
+    return resp, err
   }
   {{else -}}
   // {{.Name}} implements the {{.ServiceName}}Impl interface.
@@ -148,7 +148,7 @@ body: |-
         resp.Message = msg
       }
     }
-    return resp, nil
+    return resp, err
   }
   {{end}}
   {{end}}
