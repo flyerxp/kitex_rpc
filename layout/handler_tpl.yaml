@@ -47,7 +47,7 @@ update_behavior:
           resp.Message = msg
         }
        }
-       return resp, err
+       return resp, nil
      }
      {{end}}
      {{end}}
@@ -130,7 +130,7 @@ body: |-
         resp.Message = msg
       }
     }
-    return resp, err
+    return resp, nil
   }
   {{else -}}
   // {{.Name}} implements the {{.ServiceName}}Impl interface.
@@ -148,7 +148,7 @@ body: |-
         resp.Message = msg
       }
     }
-    return resp, err
+    return resp, nil
   }
   {{end}}
   {{end}}
