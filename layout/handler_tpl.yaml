@@ -47,7 +47,7 @@ update_behavior:
           resp.Message = msg
         }
        }
-       return resp, nil
+       return resp, err
      }
      {{end}}
      {{end}}
