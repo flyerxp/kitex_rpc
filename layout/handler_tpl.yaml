@@ -40,6 +40,9 @@ update_behavior:
          s.rpcEnd(ctx)
        }()
        resp, err = service.New{{.Name}}Service(ctx).Run({{range .Args}} {{LowerFirst .Name}}, {{end}})
+       if resp == nil{
+          resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
+       }
        if err != nil {
         st, msg := getErrMessage(ctx,"{{ToLower  .PkgRefName }}:{{.Name}}",err)
        resp.Status = st
@@ -122,15 +125,8 @@ body: |-
     defer func() {
       s.rpcEnd(ctx)
     }()
-    err = service.New{{.Name}}Service(ctx).Run({{range .Args}} {{LowerFirst .Name}}, {{end}})
-    if err != nil {
-      st, msg := getErrMessage(ctx,"{{ToLower  .PkgRefName }}:{{.Name}}",err)
-      resp.Status = st
-      if resp.Message == "" {
-        resp.Message = msg
-      }
-    }
-    return resp, nil
+    err = service.New{{.Name}}Service(ctx).Run({{range .Args}} {{LowerFirst .Name}}, {{end}})    
+    return err
   }
   {{else -}}
   // {{.Name}} implements the {{.ServiceName}}Impl interface.
@@ -141,6 +137,9 @@ body: |-
       s.rpcEnd(ctx)
     }()
     resp, err = service.New{{.Name}}Service(ctx).Run({{range .Args}} {{LowerFirst .Name}}, {{end}})
+    if resp == nil{
+      resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
+    }
     if err != nil {
       st, msg := getErrMessage(ctx,"{{ToLower  .PkgRefName }}:{{.Name}}",err)
       resp.Status = st
