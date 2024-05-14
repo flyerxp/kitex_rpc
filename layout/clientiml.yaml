@@ -20,9 +20,10 @@ body: |-
       "github.com/flyerxp/lib/logger"
       "github.com/cloudwego/kitex/pkg/kerrors"
       "github.com/flyerxp/lib/config"
+      "go.uber.org/zap"
   )
-  func recordError(ctx context.Context, err error) {
-     rpc.RecordError(ctx, err)
+  func recordError(ctx context.Context, err error,field ...zap.Field) {
+     rpc.RecordError(ctx, err,field...)
   }
   func isSystemErr(err error) bool {
     if config.GetConf().Env == "product" {
@@ -68,7 +69,7 @@ body: |-
             }()
             resp, err = getClient().{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
             if err != nil {
-               recordError(ctx, err)              
+               recordError(ctx, err,zap.String("rpcClientName","{{ .ServiceName }}"))              
             }
             if resp == nil {
               resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
