@@ -7,7 +7,13 @@
 使用方式  xxx/xxx 换成自己的项目地址
 go mod init github.com/xxx/xxx
 
-go install github.com/cloudwego/hertz/cmd/hz@latest
+https://www.cloudwego.io/zh/docs/kitex/getting-started/prerequisite/
+
+go install github.com/cloudwego/thriftgo@latest
+
+go install github.com/cloudwego/kitex/tool/cmd/kitex@latest
+
+protobuf: https://github.com/protocolbuffers/protobuf/releases  windows版本放到gopath目录下
 
 kitex -type protobuf  -template-dir layout -I idl/ -module github.com/xxx/xxx  idl/hello.proto
 
