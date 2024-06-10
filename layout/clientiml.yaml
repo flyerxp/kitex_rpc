@@ -28,9 +28,9 @@ body: |-
   func isSystemErr(err error) bool {
     if config.GetConf().Env == "product" {
       if bizE, ok := kerrors.FromBizStatusError(err); ok {
-        if _, ok = bizE.(kerrors.GRPCStatusIface); ok {
-          return true
-        }
+        if bizE.BizStatusCode() == 203 {
+  		   return true
+  	     }
       }
     }
     return false
@@ -72,7 +72,7 @@ body: |-
                recordError(ctx, err,zap.String("rpcClientName","{{ .ServiceName }}"))              
             }
             if resp != nil && resp.Status == 203 {
-               err = kerrors.NewGRPCBizStatusError(203, resp.Message)
+               err = kerrors.NewBizStatusError(203, resp.Message)
             }
             if resp == nil {
               resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})

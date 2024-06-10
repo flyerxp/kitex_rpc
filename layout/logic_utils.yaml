@@ -9,7 +9,8 @@ body: |-
   
   // 系统错误
   func SystemErr(msg string) kerrors.BizStatusErrorIface {
-      return kerrors.NewGRPCBizStatusError(203, msg)
+      //return kerrors.NewGRPCBizStatusError(203, msg)
+      return kerrors.NewBizStatusError(203, msg)
   }
   
   // 校验错误
