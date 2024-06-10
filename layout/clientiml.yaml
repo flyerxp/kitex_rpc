@@ -76,6 +76,12 @@ body: |-
               resp.Status = 203
               resp.Message = err.Error()
             }
+            if resp.Status == 202 && err == nil {
+               err = kerrors.NewBizStatusError(202, resp.Message)
+            }
+            if resp.Status == 204 && err == nil {
+               err = kerrors.NewBizStatusError(204, resp.Message)
+            }
             return resp, err
            }
   {{end}}
