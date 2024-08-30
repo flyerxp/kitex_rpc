@@ -6,7 +6,7 @@ body: |-
   import (
     "fmt"
     "github.com/flyerxp/globalStruct/config"
-    "github.com/flyerxp/lib/utils/env"
+    "github.com/flyerxp/lib/v2/utils/env"
   )
   func GetConfYaml() string {
   //这里需要换成自己的获取配置

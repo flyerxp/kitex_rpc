@@ -6,13 +6,13 @@ body: |-
 
   import (
     "{{ .Module }}/conf"
-    "github.com/flyerxp/webrpclib/rpc"
+    "github.com/flyerxp/webrpclib/v2rpc"
     "github.com/cloudwego/kitex/pkg/klog"  
     "github.com/cloudwego/kitex/server" 
     "{{.Module }}/kitex_gen/{{ ToLower .PkgRefName }}/{{ToLower .ServiceName}}"
     "context"
-    "github.com/flyerxp/lib/app"
-    "github.com/flyerxp/lib/logger"
+    "github.com/flyerxp/lib/v2/app"
+    "github.com/flyerxp/lib/v2/logger"
     "go.uber.org/zap"
     "time"
   )

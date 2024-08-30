@@ -63,7 +63,7 @@ body: |-
   package main
   import (
     "time"
-    "github.com/flyerxp/lib/logger"
+    "github.com/flyerxp/lib/v2/logger"
     "github.com/cloudwego/kitex/pkg/kerrors"
     "go.uber.org/zap"
      "{{.Module }}/biz/service"

@@ -6,7 +6,7 @@ body: |-
   
   import (
     "context"
-    "github.com/flyerxp/lib/middleware/redisL"
+    "github.com/flyerxp/lib/v2/middleware/redisL"
   )
   
   var RedisExample *redisL.RedisC

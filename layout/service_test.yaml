@@ -8,7 +8,7 @@ body: |-
   import (
     "context"
     "testing"
-    "github.com/flyerxp/lib/logger"
+    "github.com/flyerxp/lib/v2/logger"
     "{{ .Module }}/biz/service"
   	{{- range $path, $aliases := ( FilterImports .Imports .Methods )}}
   		{{- if not $aliases }}

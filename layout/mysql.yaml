@@ -6,7 +6,7 @@ body: |-
   
   import (
     "context"
-    "github.com/flyerxp/lib/middleware/mysqlL"
+    "github.com/flyerxp/lib/v2/middleware/mysqlL"
   )
   
   // 定义所有的数据库连接,每个连接一个名字
