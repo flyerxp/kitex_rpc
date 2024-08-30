@@ -15,7 +15,7 @@ body: |-
       	{{- end}}
       {{- end}}
       "github.com/cloudwego/kitex/client/callopt"
-      "github.com/flyerxp/webrpclib/v2rpc"
+      "github.com/flyerxp/webrpclib/v2/rpc"
       "time"
       "github.com/flyerxp/lib/v2/logger"
       "github.com/cloudwego/kitex/pkg/kerrors"

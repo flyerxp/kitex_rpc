@@ -8,7 +8,7 @@ body: |-
   import (
     {{ToLower .ServiceName}} "{{ .Module }}/kitex_gen/{{ToLower  .PkgRefName }}/{{ToLower .ServiceName }}"
     "github.com/cloudwego/kitex/client"
-    "github.com/flyerxp/webrpclib/v2rpc"
+    "github.com/flyerxp/webrpclib/v2/rpc"
     "{{ .Module }}/conf"
   )
   
