@@ -19,7 +19,6 @@ body: |-
       "time"
       "github.com/flyerxp/lib/v2/logger"
       "github.com/cloudwego/kitex/pkg/kerrors"
-      "github.com/flyerxp/lib/v2/config"
       "go.uber.org/zap"
   )
   func recordError(ctx context.Context, err error,field ...zap.Field) {
