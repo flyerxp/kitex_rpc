@@ -24,17 +24,7 @@ body: |-
   )
   func recordError(ctx context.Context, err error,field ...zap.Field) {
      rpc.RecordError(ctx, err,field...)
-  }
-  func isSystemErr(err error) bool {
-    if config.GetConf().Env == "product" {
-      if bizE, ok := kerrors.FromBizStatusError(err); ok {
-        if bizE.BizStatusCode() == 203 {
-  		   return true
-  	     }
-      }
-    }
-    return false
-  }
+  }  
   {{range .AllMethods}}
       {{- if or .ClientStreaming .ServerStreaming}}
           func {{.Name}} ({{if not .ClientStreaming}}{{range .Args}}{{LowerFirst .Name}} {{.Type}}, {{end}}{{end}}stream {{.PkgRefName}}.{{.ServiceName}}_{{.RawName}}Server) (err error){
@@ -84,6 +74,11 @@ body: |-
             }
             if resp.Status == 204 && err == nil {
                err = kerrors.NewBizStatusError(204, resp.Message)
+            }
+            if resp.Status == 0 && err != nil {
+              if bizE, ok := kerrors.FromBizStatusError(err); ok {
+                resp.Status = bizE.BizStatusCode()
+              }
             }
             return resp, err
            }
