@@ -3,7 +3,11 @@ update_behavior:
   type: cover
 body: |-
   package client
-  import (
+  import (     
+      "context"
+      "github.com/cloudwego/kitex/client/callopt"
+      "github.com/cloudwego/kitex/pkg/kerrors"
+      "github.com/flyerxp/lib/v2/logger"
       {{- range $path, $aliases := .Imports}}
       	{{- if not $aliases }}
       		"{{$path}}"
@@ -14,12 +18,9 @@ body: |-
       		{{- end}}
       	{{- end}}
       {{- end}}
-      "github.com/cloudwego/kitex/client/callopt"
       "github.com/flyerxp/webrpclib/v2/rpc"
-      "time"
-      "github.com/flyerxp/lib/v2/logger"
-      "github.com/cloudwego/kitex/pkg/kerrors"
       "go.uber.org/zap"
+      "time"     
   )
   func recordError(ctx context.Context, err error,field ...zap.Field) {
      rpc.RecordError(ctx, err,field...)
@@ -66,15 +67,17 @@ body: |-
             if resp == nil {
               resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
               resp.Status = 203
-              resp.Message = err.Error()
+              if err!=nil{
+                 resp.Message = err.Error()
+              }
             }
-            if resp.Status == 202 && err == nil {
+            if resp!=nil && resp.Status == 202 && err == nil {
                err = kerrors.NewBizStatusError(202, resp.Message)
             }
-            if resp.Status == 204 && err == nil {
+            if resp!=nil && resp.Status == 204 && err == nil {
                err = kerrors.NewBizStatusError(204, resp.Message)
             }
-            if resp.Status == 0 && err != nil {
+            if resp!=nil && resp.Status == 0 && err != nil {
               if bizE, ok := kerrors.FromBizStatusError(err); ok {
                 resp.Status = bizE.BizStatusCode()
               }
