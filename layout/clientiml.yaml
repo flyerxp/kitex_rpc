@@ -3,8 +3,7 @@ update_behavior:
   type: cover
 body: |-
   package client
-  import (     
-      "context"
+  import (
       "github.com/cloudwego/kitex/client/callopt"
       "github.com/cloudwego/kitex/pkg/kerrors"
       "github.com/flyerxp/lib/v2/logger"
