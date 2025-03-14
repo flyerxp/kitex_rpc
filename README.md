@@ -13,6 +13,8 @@ go install github.com/cloudwego/thriftgo@latest
 
 go install github.com/cloudwego/kitex/tool/cmd/kitex@latest
 
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+
 protobuf: https://github.com/protocolbuffers/protobuf/releases  windows版本放到gopath目录下
 
 kitex -type protobuf  -template-dir layout -I idl/ -module github.com/xxx/xxx  idl/hello.proto
