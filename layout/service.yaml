@@ -1,4 +1,9 @@
-path: biz/service/{{ SnakeString (index .Methods 0).Name }}.go
+path: |-
+  {{- if eq .ServiceName "XcxService" -}}
+  biz/service/xcx/{{ SnakeString (index .Methods 0).Name }}.go
+  {{- else -}}
+  biz/service/{{ SnakeString (index .Methods 0).Name }}.go
+  {{- end -}}
 loop_method: true
 update_behavior:
   type: skip
