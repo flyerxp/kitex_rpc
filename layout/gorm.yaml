@@ -1,0 +1,43 @@
+path: biz/dal/gormL/init.go
+update_behavior:
+  type: skip
+body: |-
+  package gormL
+  
+  import (
+    "context"
+    "github.com/flyerxp/lib/v2/logger"
+    "github.com/flyerxp/lib/v2/middleware/gormL"
+    "gorm.io/gorm"
+  )
+  
+  // DBClient 定义GORM数据库连接
+  type DBClient struct {
+    {DBName} *gorm.DB
+  }
+
+  var dbClient *DBClient
+  
+  // Init 初始化GORM数据库连接
+  func Init(ctx context.Context) error {
+      if dbClient != nil {
+        return nil
+      }
+      db, err := gormL.GetEngine(ctx, "{DBName}")
+      if err != nil {
+        return err
+      }
+     dbClient = &DBClient{{DBName}: db}
+     return nil
+  }
+
+  // GetDB 获取已注入context的GORM DB实例
+  func GetDB(ctx context.Context) *gorm.DB {
+      if dbClient == nil {
+      initCtx := logger.GetContext(context.Background(), "gormInit")
+      if err := Init(initCtx); err != nil {
+        panic(err)
+      }
+      }
+      return dbClient.{DBName}.WithContext(ctx)
+  }
