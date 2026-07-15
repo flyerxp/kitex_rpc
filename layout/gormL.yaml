@@ -1,0 +1,32 @@
+path: biz/dal/gormL/dbtest/init.go
+update_behavior:
+  type: skip
+body: |-
+  package dbtest
+  
+  import (
+    "context"
+    "github.com/flyerxp/lib/v2/logger"
+    "github.com/flyerxp/lib/v2/middleware/gormL"
+    "gorm.io/gorm"
+  )
+  
+  // 定义所有的数据库连接,每个连接一个名字
+  type DbClientStt struct {
+     D{{ .PkgName }}  *gorm.DB
+  }
+  
+  
+  func Init(ctx context.Context) {
+    if DbClient == nil {
+      DbClient = new(DbClientStt)
+      DbClient.D{{ .PkgName }}, _ = gormL.GetEngine(ctx,"pubMysql")     
+    }  
+  }
+  func Get{{ .PkgName }}DB(ctx context.Context){
+     if DbClient == nil {
+     initCtx := logger.GetContext(context.Background(), "gormInit")
+     Init(initCtx)
+     }
+     return DbClient.D{{ .PkgName }}
+  }
