@@ -56,29 +56,31 @@ body: |-
               logger.AddRpcTime(ctx,i)
               
             }()
-            resp, err = getClient().{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
-            if resp == nil {
-              resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
+            resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
+            rawResp, rawErr := getClient().{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
+            if rawResp == nil {
               resp.Status = 203
-              if err!=nil{
-                 resp.Message = err.Error()
+              if rawErr!=nil{
+                 resp.Message = rawErr.Error()
               }
+            }else{
+              resp = rawResp
             }
-            if err != nil {
+            if rawErr != nil {
+               err = rawErr
                recordError(ctx, err,zap.String("rpcClientName","{{ .ServiceName }}"))              
             }
- 
             if resp.Status == 203 {
                err = kerrors.NewBizStatusError(203, resp.Message)
             }
-         
-            if resp!=nil && resp.Status == 202 && err == nil {
+          
+            if resp.Status == 202 && err == nil {
                err = kerrors.NewBizStatusError(202, resp.Message)
             }
-            if resp!=nil && resp.Status == 204 && err == nil {
+            if resp.Status == 204 && err == nil {
                err = kerrors.NewBizStatusError(204, resp.Message)
             }
-            if resp!=nil && resp.Status == 0 && err != nil {
+            if resp.Status == 0 && err != nil {
               if bizE, ok := kerrors.FromBizStatusError(err); ok {
                 resp.Status = bizE.BizStatusCode()
               }
