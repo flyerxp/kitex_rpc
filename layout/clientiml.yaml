@@ -57,9 +57,6 @@ body: |-
               
             }()
             resp, err = getClient().{{.Name}}(ctx, {{- range .Args}} {{LowerFirst .Name}}, {{end}} callOptions...)
-            if err != nil {
-               recordError(ctx, err,zap.String("rpcClientName","{{ .ServiceName }}"))              
-            }
             if resp == nil {
               resp = new({{ ReplaceString .Resp.Type "*" "" -1 }})
               resp.Status = 203
@@ -67,6 +64,10 @@ body: |-
                  resp.Message = err.Error()
               }
             }
+            if err != nil {
+               recordError(ctx, err,zap.String("rpcClientName","{{ .ServiceName }}"))              
+            }
+ 
             if resp.Status == 203 {
                err = kerrors.NewBizStatusError(203, resp.Message)
             }
